@@ -14,12 +14,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 克隆
-        uses: actions/checkout@v3
-        with:
-          repository: Meetingfate/action_build_lmi_rom_A13
-          token: ${{ secrets.PASSNAME }}
-          path: test
+      - name: 克隆
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PASSNAME }}
+          repository: Meetingfate/action_build_lmi_rom_A13
       - name: 1.准备环境
         run: |
           sudo timedatectl set-timezone Asia/Shanghai
