@@ -18,6 +18,7 @@ jobs:
       - uses: actions/checkout@master
       - name: 获取A13 tool‌‌...
         run: |
+          sudo rm -rf "$GITHUB_WORKSPACE"/*
           git clone --recurse-submodules https://github.com/Meetingfate/action_build_lmi_rom_A13.git -b 11 "$GITHUB_WORKSPACE"
 
       - name: 1.准备环境
