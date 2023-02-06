@@ -65,6 +65,8 @@ jobs:
               md5=$(md5sum "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip)
               echo "MD5=${md5:0:32}" >> $GITHUB_ENV
               zipmd5=${md5:0:10}
+              sudo chown everybody:everybody "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip
+              sudo chmod 777 "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip
               mv "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip "$GITHUB_WORKSPACE"/zip/miui_LMI_"${{ env.date }}"_"$zipmd5"_13.0_2in1_Root_EROFS.zip
               echo "NEW_PACKAGE_NAME=miui_LMI_"${{ env.date }}"_"$zipmd5"_13.0_2in1_Root_EROFS.zip" >> $GITHUB_ENV
           fi
