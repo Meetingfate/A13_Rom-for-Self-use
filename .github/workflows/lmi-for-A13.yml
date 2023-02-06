@@ -16,12 +16,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@master
-      - name: 获取A13 tool‌‌ 
-        run: |
+      - name: 克隆
         uses: actions/checkout@v3
         with:
           repository: Meetingfate/action_build_lmi_rom_A13
-          token: ${{ github.token }}
+          token: ${{ secrets.PASSNAME }}
           path: test
       - name: 1.准备环境
         run: |
