@@ -55,7 +55,7 @@ jobs:
           fi
       - name: 3.制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE
       - name: 4.打包zip
         run: |
           zstd "$GITHUB_WORKSPACE"/images/super.img -o "$GITHUB_WORKSPACE"/images/super.zst --rm
