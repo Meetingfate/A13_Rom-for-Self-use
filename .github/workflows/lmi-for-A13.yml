@@ -21,7 +21,6 @@ jobs:
           repository: Meetingfate/action_build_lmi_rom_A13
       - name: 1.准备环境
         run: |
-          echo $GITHUB_ENV
           sudo timedatectl set-timezone Asia/Shanghai
           if [ -n "${{ github.event.inputs.custom_version }}" ]; then
               echo "date=${{ github.event.inputs.custom_version }}" >> $GITHUB_ENV
@@ -57,11 +56,23 @@ jobs:
       - name: 3.制作rom‌‌
         run: |
           sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV
-      - name: 4.上传到OneDrive
+      - name: 4.打包zip
+        run: |
+          zstd "$GITHUB_WORKSPACE"/images/super.img -o "$GITHUB_WORKSPACE"/images/super.zst --rm
+          if [[ "${{ env.device }}" == "lmi" ]]; then
+              sudo 7z a "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip "$GITHUB_WORKSPACE"/images/*
+              sudo rm -rf "$GITHUB_WORKSPACE"/images
+              md5=$(md5sum "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip)
+              echo "MD5=${md5:0:32}" >> $GITHUB_ENV
+              zipmd5=${md5:0:10}
+              mv "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip "$GITHUB_WORKSPACE"/zip/miui_LMI_"${{ env.date }}"_"$zipmd5"_13.0_2in1_Root_EROFS.zip
+              echo "NEW_PACKAGE_NAME=miui_LMI_"${{ env.date }}"_"$zipmd5"_13.0_2in1_Root_EROFS.zip" >> $GITHUB_ENV
+          fi
+      - name: 5.上传到OneDrive
         run: |
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
-      - name: 5.发送打包成功通知
+      - name: 6.发送打包成功通知
         run: |
           mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
@@ -75,12 +86,12 @@ jobs:
               fi
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
-      - name: 6.上传到123盘
+      - name: 7.上传到123盘
         run: |
           if [[ ${{ github.event.inputs.one }} = 1 ]]; then
               rclone copy -P ./zip/* 123pan:/ --buffer-size=1024M
           fi
-      - name: 7.删除工作流运行
+      - name: 8.删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
