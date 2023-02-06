@@ -59,7 +59,6 @@ jobs:
           sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE
       - name: 4.打包zip
         run: |
-          zstd "$GITHUB_WORKSPACE"/images/super.img -o "$GITHUB_WORKSPACE"/images/super.zst --rm
           if [[ "${{ env.device }}" == "lmi" ]]; then
               sudo 7z a "$GITHUB_WORKSPACE"/zip/miui_LMI_${{ env.date }}.zip "$GITHUB_WORKSPACE"/images/*
               sudo rm -rf "$GITHUB_WORKSPACE"/images
