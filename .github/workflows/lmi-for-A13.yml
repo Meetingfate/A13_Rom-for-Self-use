@@ -15,10 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@master
-      - name: 获取A13 tool‌‌ 
-        run: |
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           repository: Meetingfate/action_build_lmi_rom_A13
           token: ${{ github.token }}
