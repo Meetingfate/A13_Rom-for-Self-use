@@ -21,6 +21,7 @@ jobs:
           repository: Meetingfate/action_build_lmi_rom_A13
       - name: 1.准备环境
         run: |
+          echo $GITHUB_ENV
           sudo timedatectl set-timezone Asia/Shanghai
           if [ -n "${{ github.event.inputs.custom_version }}" ]; then
               echo "date=${{ github.event.inputs.custom_version }}" >> $GITHUB_ENV
