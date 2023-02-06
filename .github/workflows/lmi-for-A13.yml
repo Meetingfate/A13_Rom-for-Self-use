@@ -9,7 +9,7 @@ on:
         description: "待打包的版本号"
       one:
         description: "123pan上传"
-        default: '1'
+        default: '0'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,6 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: 获取A13 tool‌‌
+        with:
         token: ${{ github.token }}
         run: |
           git clone https://github.com/Meetingfate/action_build_lmi_rom_A13.git -b "$GITHUB_WORKSPACE"/A13-TooL
