@@ -1,0 +1,100 @@
+name: lmi-for-A13
+on:
+  workflow_dispatch:
+    inputs:
+      URL:
+        description: "待操作的系统包下载地址"
+        required: true
+      custom_version:
+        description: "待打包的版本号"
+      one:
+        description: "123pan上传"
+        default: '1'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+      - name: 获取A13 tool‌‌...
+        run: |
+          git clone --recurse-submodules https://github.com/Meetingfate/action_build_lmi_rom_A13.git -b 11 "$GITHUB_WORKSPACE"
+
+      - name: 1.准备环境
+        run: |
+          sudo timedatectl set-timezone Asia/Shanghai
+          if [ -n "${{ github.event.inputs.custom_version }}" ]; then
+              echo "date=${{ github.event.inputs.custom_version }}" >> $GITHUB_ENV
+          else
+              echo "date=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
+          fi
+          echo "origin_date=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
+          echo "host=$(uname -n)" >> $GITHUB_ENV
+          echo "ORIGN_ZIP_NAME=miui_LMI_V13.0.6.0.SJKCNXM_0962de9501_12.0.zip" >> $GITHUB_ENV
+          sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
+          sudo apt --fix-broken install
+          sudo apt update --fix-missing
+          pip3 install --upgrade pip
+          pip3 install pycryptodome
+          pip3 install setuptools
+          pip3 install docopt
+          pip3 install requests
+          pip3 install beautifulsoup4
+          pip3 install --ignore-installed pyyaml
+          curl https://rclone.org/install.sh | sudo bash
+          mkdir -p ~/.config/rclone/
+          unzip -o -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
+          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
+          sudo systemctl stop alist
+          sudo mv -f /home/runner/.config/rclone/data.db-shm /opt/alist/data
+          sudo mv -f /home/runner/.config/rclone/data.db-wal /opt/alist/data
+          sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
+          sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
+          sudo systemctl start alist
+      - name: 2.制作rom‌‌...
+        run: |
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi << EOF
+          ${{ github.event.inputs.URL }}
+          y
+          y
+          ${{ env.ORIGN_ZIP_NAME }}
+          y
+          y
+          ${{ env.origin_date }}
+          y
+          y
+          ${{ env.date }}
+          y
+          y
+          ${{ env.host }}
+          y
+      - name: 3.上传到OneDrive
+        run: |
+          rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
+          rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
+      - name: 4.发送打包成功通知
+        run: |
+          mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          if [[ "${{ env.device }}" == "lmi" ]]; then
+              if [[ "${{ env.popup }}" == "true" ]]; then
+                  curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":" **红米K30Pro ${{ env.date }}已构建完成** \n \n **升降未修复，当前为测试包** \n \n **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+              else
+                  curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":" **红米K30Pro ${{ env.date }}已构建完成** \n \n **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+              fi
+              echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          fi
+      - name: 5.上传到123盘
+        run: |
+          if [[ ${{ github.event.inputs.one }} = 1 ]]; then
+              rclone copy -P ./zip/* 123pan:/ --buffer-size=1024M
+          fi
+      - name: 6.删除工作流运行
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 0
