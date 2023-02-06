@@ -52,21 +52,7 @@ jobs:
           sudo systemctl start alist
       - name: 2.制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi << EOF
-          ${{ github.event.inputs.URL }}
-          y
-          y
-          ${{ env.ORIGN_ZIP_NAME }}
-          y
-          y
-          ${{ env.origin_date }}
-          y
-          y
-          ${{ env.date }}
-          y
-          y
-          ${{ env.host }}
-          y
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} ${{ env.host }}
       - name: 3.上传到OneDrive
         run: |
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
