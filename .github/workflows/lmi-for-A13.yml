@@ -21,7 +21,7 @@ jobs:
           repository: Meetingfate/action_build_lmi_rom_A13
       - name: 制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ github.event.inputs.custom_version }} $GITHUB_WORKSPACE ${{ secrets.PASSWORD }} ${{ secrets.appToken2 }} ${{ github.event.inputs.one }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ github.event.inputs.custom_version }} $GITHUB_WORKSPACE ${{ secrets.PASSWORD }} ${{ github.event.inputs.one }}
       - name: 删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
