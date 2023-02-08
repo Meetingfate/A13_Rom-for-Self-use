@@ -13,6 +13,10 @@ on:
       rom_type:
         description: "ROM类别，可选pay、free"
         default: 'pay'
+      Bottom_URL:
+        description: "底包下载地址"
+        default: 'https://hugeota.d.miui.com/V13.0.6.0.SJKCNXM/miui_LMI_V13.0.6.0.SJKCNXM_0962de9501_12.0.zip'
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,7 +35,7 @@ jobs:
               echo "date=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
           fi
           echo "device=lmi" >> $GITHUB_ENV
-          echo "ORIGN_ZIP_NAME=miui_LMI_V13.0.6.0.SJKCNXM_0962de9501_12.0.zip" >> $GITHUB_ENV
+          echo "ORIGN_ZIP_NAME=$(echo ${{ github.event.inputs.Bottom_URL }} | cut -d"/" -f5)" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
           sudo apt update --fix-missing
@@ -59,7 +63,7 @@ jobs:
           fi
       - name: 3.制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }}
       - name: 4.上传到OneDrive
         run: |
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
