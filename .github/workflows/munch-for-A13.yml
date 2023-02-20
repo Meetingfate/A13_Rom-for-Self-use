@@ -57,7 +57,7 @@ jobs:
           sudo systemctl start alist
       - name: 2.发送开始构建通知
         run: |
-          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K40S ${{ env.date }}开始构建","content":" **红米K40S ${{ env.date }}开始构建** ","topic":"munch","template":"markdown"}' http://www.pushplus.plus/send || true
+          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K40S ${{ env.date }}开始构建","content":" **红米K40S ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
       - name: 3.制作rom‌‌
         run: |
           sudo bash "$GITHUB_WORKSPACE"/make.sh ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }}
@@ -71,7 +71,7 @@ jobs:
           echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
-          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K40S ${{ env.date }}已构建完成","content":" **红米K40S ${{ env.date }}已构建完成** \n \n **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** ","topic":"munch","template":"markdown"}' http://www.pushplus.plus/send || true
+          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K40S ${{ env.date }}已构建完成","content":" **红米K40S ${{ env.date }}已构建完成** \n \n **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
           echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
       - name: 6.上传到123盘
         run: |
