@@ -15,7 +15,7 @@ on:
         default: 'pay'
       Bottom_URL:
         description: "底包下载地址"
-        default: 'https://hugeota.d.miui.com/V13.0.6.0.SJKCNXM/miui_LMI_V13.0.6.0.SJKCNXM_0962de9501_12.0.zip'
+        default: 'https://hugeota.d.miui.com/V14.0.1.0.SJKCNXM/miui_LMI_V14.0.1.0.SJKCNXM_f138ab23ac_12.0.zip'
         required: true
 jobs:
   build:
