@@ -15,7 +15,6 @@ on:
         default: 'ext4'
       Bottom_URL:
         description: "底包下载地址"
-        default: 'https://hugeota.d.miui.com/V14.0.23.2.13.DEV/miui_MUNCH_V14.0.23.2.13.DEV_d8833434cc_13.0.zip'
         required: true
 jobs:
   build:
