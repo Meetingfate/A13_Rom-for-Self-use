@@ -133,7 +133,7 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: test_rom
-          path: "${{ github.workspace }}"/zip/
+          path: ${{ github.workspace }}/zip/
       - name: 9.删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
