@@ -7,14 +7,6 @@ on:
         required: true
       custom_version:
         description: "待打包的版本号"
-      one:
-        description: "123pan上传"
-        required: true
-        default: '0'
-        type: choice
-        options:
-        - 0
-        - 1
       rom_type:
         description: "ROM类别，可选erofs、ext4"
         required: true
