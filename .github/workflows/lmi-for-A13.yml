@@ -9,10 +9,20 @@ on:
         description: "待打包的版本号"
       one:
         description: "123pan上传"
+        required: true
         default: '0'
+        type: choice
+        options:
+        - 0
+        - 1
       rom_type:
         description: "ROM类别，可选pay、free"
+        required: true
         default: 'pay'
+        type: choice
+        options:
+        - pay
+        - free
       Bottom_URL:
         description: "底包下载地址"
         default: 'https://hugeota.d.miui.com/V14.0.3.0.SJKCNXM/miui_LMI_V14.0.3.0.SJKCNXM_9079c992b4_12.0.zip'
