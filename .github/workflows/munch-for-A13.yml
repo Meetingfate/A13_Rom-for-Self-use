@@ -28,6 +28,7 @@ on:
         type: boolean
       GithubRelease:
         description: 'Github Release'
+        default: 'true'
         required: true
         type: boolean
 jobs:
