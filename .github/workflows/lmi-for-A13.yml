@@ -29,6 +29,7 @@ on:
         type: boolean
       GithubRelease:
         description: 'Github Release'
+        default: 'true'
         required: true
         type: boolean
 jobs:
@@ -121,11 +122,6 @@ jobs:
               fi
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
-      - name: 测试上传到垃圾桶
-        uses: actions/upload-artifact@v3.1.2
-        with:
-          name: test_rom
-          path: ${{ github.workspace }}/zip/
       - name: 9.删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
