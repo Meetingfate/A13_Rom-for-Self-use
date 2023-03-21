@@ -27,6 +27,18 @@ on:
         description: "底包下载地址"
         default: 'https://hugeota.d.miui.com/V14.0.3.0.SJKCNXM/miui_LMI_V14.0.3.0.SJKCNXM_9079c992b4_12.0.zip'
         required: true
+      pan123:
+        description: '123盘'
+        required: true
+        type: boolean
+      OneDrive:
+        description: 'OneDrive'
+        required: true
+        type: boolean
+      GithubRelease:
+        description: 'Github Release'
+        required: true
+        type: boolean
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -74,11 +86,36 @@ jobs:
       - name: 3.制作rom‌‌
         run: |
           sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }}
-      - name: 4.上传到OneDrive
+      - if: ${{ github.event.inputs.GithubRelease == 'true' }}
+        name: 4.处理包
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
+          cd "$GITHUB_WORKSPACE"/GithubRelease
+          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/"${{ env.NEW_PACKAGE_NAME }}" "${{ env.NEW_PACKAGE_NAME }}"
+          cd "$GITHUB_WORKSPACE"
+          touch file.log
+          echo "${{ env.NEW_PACKAGE_NAME }}" > file.log
+      - if: ${{ github.event.inputs.GithubRelease == 'true' }}
+        name: 5.上传到Github Release
+        uses: ncipollo/release-action@main
+        with:
+          artifacts: ${{ github.workspace }}/GithubRelease/*
+          name: "${{ env.date }}"
+          tag: "${{ env.date }}"
+          bodyFile: "${{ github.workspace }}/file.log"
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - if: ${{ github.event.inputs.OneDrive == 'true' }}
+        name: 6.上传到OneDrive
         run: |
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
-      - name: 5.发送打包成功通知
+      - if: ${{ github.event.inputs.pan123 == 'true' }}
+        name: 7.上传到123盘
+        run: |
+          rclone copy -P ./zip/* 123pan:/ --buffer-size=1024M
+      - name: 8.发送打包成功通知
         run: |
           mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
@@ -92,12 +129,7 @@ jobs:
               fi
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
-      - name: 6.上传到123盘
-        run: |
-          if [[ ${{ github.event.inputs.one }} = 1 ]]; then
-              rclone copy -P ./zip/* 123pan:/ --buffer-size=1024M
-          fi
-      - name: 7.删除工作流运行
+      - name: 9.删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
