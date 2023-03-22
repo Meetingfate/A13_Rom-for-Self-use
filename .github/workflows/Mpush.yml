@@ -2,29 +2,14 @@ name: Mpush
 on:
   workflow_dispatch:
     inputs:
-      URL:
-        description: "待操作的系统包下载地址"
-        required: true
-      custom_version:
-        description: "待打包的版本号"
-      rom_type:
-        description: "ROM类别，可选pay、free"
-        required: true
-        default: 'pay'
-        type: choice
-        options:
-        - pay
-        - free
-      Bottom_URL:
-        description: "底包下载地址"
-        default: 'https://hugeota.d.miui.com/V14.0.3.0.SJKCNXM/miui_LMI_V14.0.3.0.SJKCNXM_9079c992b4_12.0.zip'
-        required: true
       pan123:
         description: '123盘'
+        default: 'true'
         required: true
         type: boolean
       OneDrive:
         description: 'OneDrive'
+        default: 'true'
         required: true
         type: boolean
       GithubRelease:
@@ -77,7 +62,7 @@ jobs:
               if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
                  Mpush+=" **上传至123云盘，请登录123云盘自行下载** \n \n"
               fi
-              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"${Mpush} ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":""${Mpush}" ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
       - name: 9.删除工作流运行
