@@ -62,7 +62,7 @@ jobs:
               if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
                  Mpush+=" **上传至123云盘，请登录123云盘自行下载** \n \n"
               fi
-              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"$(echo "$Mpush") ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"$(echo "$Mpush") ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
       - name: 9.删除工作流运行
