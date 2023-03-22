@@ -58,7 +58,7 @@ jobs:
                  Mpush+=" **上传至GithubRelease，请前往Github自行下载** \n \n"
               fi
               if [[ ${{ github.event.inputs.OneDrive }} == 'true' ]]; then
-                 Mpush+=" **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** \n \n"
+                 Mpush+=" **上传至OneDrive，下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** \n \n"
               fi
               if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
                  Mpush+=" **上传至123云盘，请登录123云盘自行下载** \n \n"
