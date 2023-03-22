@@ -41,6 +41,11 @@ jobs:
           pip3 install requests
           pip3 install beautifulsoup4
           pip3 install --ignore-installed pyyaml
+      - name: 2.发送开始构建通知
+        run: |
+          if [[ "${{ env.device }}" == "lmi" ]]; then
+              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}开始构建","content":" **红米K30Pro ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+          fi
       - name: 8.发送打包成功通知
         run: |
           mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
