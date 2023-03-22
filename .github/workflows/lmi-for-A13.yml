@@ -41,7 +41,7 @@ jobs:
         with:
           token: ${{ secrets.PASSNAME }}
           repository: Meetingfate/action_build_lmi_rom_A13
-      - name: - 准备环境
+      - name: -准备环境
         run: |
           sudo timedatectl set-timezone Asia/Shanghai
           if [ -n "${{ github.event.inputs.custom_version }}" ]; then
@@ -71,16 +71,16 @@ jobs:
           sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
           sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
           sudo systemctl start alist
-      - name: - 发送开始构建通知
+      - name: -发送开始构建通知
         run: |
           if [[ "${{ env.device }}" == "lmi" ]]; then
               curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}开始构建","content":" **红米K30Pro ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
           fi
-      - name: - 制作rom‌‌
+      - name: -制作rom‌‌
         run: |
           sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
-        name: - 处理包
+        name: -处理包
         run: |
           mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
           cd "$GITHUB_WORKSPACE"/GithubRelease
@@ -89,7 +89,7 @@ jobs:
           touch file.log
           echo "${{ env.NEW_PACKAGE_NAME }}" > file.log
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
-        name: - 上传到Github Release
+        name: -上传到Github Release
         uses: ncipollo/release-action@main
         with:
           artifacts: ${{ github.workspace }}/GithubRelease/*
@@ -100,15 +100,15 @@ jobs:
           artifactErrorsFailBuild: true
           token: ${{ secrets.GITHUB_TOKEN }}
       - if: ${{ github.event.inputs.OneDrive == 'true' }}
-        name: - 上传到OneDrive
+        name: -上传到OneDrive
         run: |
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
       - if: ${{ github.event.inputs.pan123 == 'true' }}
-        name: - 上传到123盘
+        name: -上传到123盘
         run: |
           rclone copy -P ./zip/* 123pan:/ --buffer-size=1024M
-      - name: - 整合打包成功通知内容
+      - name: -整合打包成功通知内容
         run: |
           if [[ "${{ env.device }}" == "lmi" ]]; then
               Mpush=" **红米K30Pro ${{ env.date }}已构建完成** \n \n"
@@ -127,7 +127,7 @@ jobs:
               fi
               echo "Mpush=$(echo $Mpush)" >> $GITHUB_ENV
           fi
-      - name: - 发送构建完成通知
+      - name: -发送构建完成通知
         run: |
           mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
@@ -137,7 +137,7 @@ jobs:
               curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
-      - name: - 删除工作流运行
+      - name: -删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
