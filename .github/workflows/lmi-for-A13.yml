@@ -115,11 +115,21 @@ jobs:
           echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           if [[ "${{ env.device }}" == "lmi" ]]; then
+              Mpush=" **红米K30Pro ${{ env.date }}已构建完成** \n \n"
               if [[ "${{ env.popup }}" == "true" ]]; then
-                  curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":" **红米K30Pro ${{ env.date }}已构建完成** \n \n **升降未修复，当前为测试包** \n \n **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
-              else
-                  curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":" **红米K30Pro ${{ env.date }}已构建完成** \n \n **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+                  Mpush+=" **升降未修复，当前为测试包** \n \n"
               fi
+              Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
+              if [[ ${{ github.event.inputs.GithubRelease }} == 'true' ]]; then
+                 Mpush+=" **上传至GithubRelease，请前往Github自行下载** \n \n"
+              fi
+              if [[ ${{ github.event.inputs.OneDrive }} == 'true' ]]; then
+                 Mpush+=" **下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})**"
+              fi
+              if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
+                 Mpush+=" **上传至123云盘，请登录123云盘自行下载** \n \n"
+              fi
+              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"${Mpush} ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
       - name: 9.删除工作流运行
