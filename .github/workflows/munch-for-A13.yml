@@ -105,7 +105,7 @@ jobs:
           rclone copy -P ./zip/* 123pan:/ --buffer-size=1024M
       - name: -整合打包成功通知内容
         run: |
-          if [[ "${{ env.device }}" == "lmi" ]]; then
+          if [[ "${{ env.device }}" == "munch" ]]; then
               Mpush=" **红米K40S ${{ env.date }}已构建完成** \n \n"
               Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
               if [[ ${{ github.event.inputs.GithubRelease }} == 'true' ]]; then
@@ -125,7 +125,7 @@ jobs:
           echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
-          if [[ "${{ env.device }}" == "lmi" ]]; then
+          if [[ "${{ env.device }}" == "munch" ]]; then
               curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.appToken2 }}","title":"红米K40S ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
