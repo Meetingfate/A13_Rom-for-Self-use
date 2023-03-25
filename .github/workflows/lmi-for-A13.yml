@@ -15,6 +15,10 @@ on:
         options:
         - pay
         - free
+      data_pass:
+        description: 'data加密'
+        required: true
+        type: boolean
       Bottom_URL:
         description: "底包下载地址"
         default: 'https://hugeota.d.miui.com/V14.0.3.0.SJKCNXM/miui_LMI_V14.0.3.0.SJKCNXM_9079c992b4_12.0.zip'
@@ -78,7 +82,7 @@ jobs:
           fi
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }} ${{ github.event.inputs.data_pass }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
