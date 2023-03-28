@@ -1,4 +1,4 @@
-name: lmi-for-A13
+﻿name: lmi-for-A13
 on:
   workflow_dispatch:
     inputs:
@@ -8,13 +8,21 @@ on:
       custom_version:
         description: "待打包的版本号"
       rom_type:
-        description: "ROM类别，可选pay、free"
+        description: "ROM内容，可选pay、free"
         required: true
         default: 'pay'
         type: choice
         options:
         - pay
         - free
+      img_type:
+        description: "IMG格式，可选erofs、ext"
+        required: true
+        default: 'erofs'
+        type: choice
+        options:
+        - erofs
+        - ext
       data_pass:
         description: 'data加密'
         required: true
@@ -82,7 +90,7 @@ jobs:
           fi
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }} ${{ github.event.inputs.data_pass }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.ORIGN_ZIP_NAME }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }} ${{ github.event.inputs.data_pass }} ${{ github.event.inputs.img_type }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
