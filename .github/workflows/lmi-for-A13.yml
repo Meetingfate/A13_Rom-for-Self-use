@@ -113,8 +113,8 @@ jobs:
       - if: ${{ github.event.inputs.OneDrive == 'true' }}
         name: -上传到OneDrive
         run: |
-          rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages/lmi
-          rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages/lmi --buffer-size=1024M
+          rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
+          rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
       - if: ${{ github.event.inputs.pan123 == 'true' }}
         name: -上传到123盘
         run: |
@@ -131,7 +131,7 @@ jobs:
                  Mpush+=" **已上传至GithubRelease，请前往Github自行下载** \n \n"
               fi
               if [[ ${{ github.event.inputs.OneDrive }} == 'true' ]]; then
-                 Mpush+=" **已上传至OneDrive，下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/lmi/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/lmi/${{ env.NEW_PACKAGE_NAME }})** \n \n"
+                 Mpush+=" **已上传至OneDrive，下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** \n \n"
               fi
               if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
                  Mpush+=" **已上传至123云盘，请登录123云盘自行下载** \n \n"
