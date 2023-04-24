@@ -23,6 +23,14 @@ on:
         options:
         - erofs
         - ext
+      download_type:
+        description: "下载命令，可选aria2c、wget"
+        required: true
+        default: 'aria2c'
+        type: choice
+        options:
+        - aria2c
+        - wget
       data_pass:
         description: 'data加密'
         required: true
@@ -93,7 +101,7 @@ jobs:
           fi
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }} ${{ github.event.inputs.data_pass }} ${{ github.event.inputs.img_type }} ${{ github.event.inputs.dolby }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }} ${{ github.event.inputs.data_pass }} ${{ github.event.inputs.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.download_type }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
