@@ -23,14 +23,6 @@ on:
         options:
         - erofs
         - ext
-      download_type:
-        description: "下载命令，可选aria2c、wget"
-        required: true
-        default: 'aria2c'
-        type: choice
-        options:
-        - aria2c
-        - wget
       data_pass:
         description: 'data加密'
         required: true
@@ -43,6 +35,10 @@ on:
         description: "底包下载地址"
         default: 'https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip'
         required: true
+      pan123:
+        description: '123盘'
+        required: true
+        type: boolean
       OneDrive:
         description: 'OneDrive'
         required: true
@@ -123,6 +119,10 @@ jobs:
         run: |
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
+      - if: ${{ github.event.inputs.pan123 == 'true' }}
+        name: -上传到123盘
+        run: |
+            sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0
       - name: -整合打包成功通知内容
         run: |
           if [[ "${{ env.device }}" == "lmi" ]]; then
@@ -136,6 +136,9 @@ jobs:
               fi
               if [[ ${{ github.event.inputs.OneDrive }} == 'true' ]]; then
                  Mpush+=" **已上传至OneDrive，下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** \n \n"
+              fi
+              if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
+                 Mpush+=" **已上传至123云盘，请登录123云盘自行下载** \n \n"
               fi
               echo "Mpush=$(echo $Mpush)" >> $GITHUB_ENV
           fi
