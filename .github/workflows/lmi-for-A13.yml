@@ -31,10 +31,10 @@ on:
         description: '杜比音效'
         required: true
         type: boolean
-      Bottom_URL:
-        description: "底包下载地址"
-        default: 'https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip'
+      high_fps:
+        description: '高刷'
         required: true
+        type: boolean
       pan123:
         description: '123盘'
         required: true
@@ -66,6 +66,7 @@ jobs:
               echo "date=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
           fi
           echo "device=lmi" >> $GITHUB_ENV
+          echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
           sudo apt update --fix-missing
@@ -93,7 +94,7 @@ jobs:
           fi
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }} ${{ github.event.inputs.data_pass }} ${{ github.event.inputs.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.download_type }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ env.Bottom_URL }} ${{ github.event.inputs.data_pass }} ${{ github.event.inputs.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.download_type }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
