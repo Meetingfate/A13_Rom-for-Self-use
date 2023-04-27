@@ -37,6 +37,7 @@ on:
         type: boolean
       pan123:
         description: '123盘'
+        default: 'true'
         required: true
         type: boolean
       OneDrive:
@@ -45,7 +46,6 @@ on:
         type: boolean
       GithubRelease:
         description: 'Github Release'
-        default: 'true'
         required: true
         type: boolean
 jobs:
