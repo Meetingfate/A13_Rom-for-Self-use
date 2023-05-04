@@ -64,7 +64,16 @@ jobs:
           fi
           echo "device=lmi" >> $GITHUB_ENV
           echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip" >> $GITHUB_ENV
-          echo "img_type=$img_type" >> $GITHUB_ENV
+          if [[ $img_type = ext ]]; then
+            echo "img_type=ext" >> $GITHUB_ENV
+          elif [[ $img_type = erofs ]]; then
+            echo "img_type=erofs" >> $GITHUB_ENV
+          fi
+          if [[ $data_pass = true ]]; then
+            echo "data_pass=true" >> $GITHUB_ENV
+          elif [[ $data_pass = false ]]; then
+            echo "data_pass=false" >> $GITHUB_ENV
+          fi
           echo "data_pass=$data_pass" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
