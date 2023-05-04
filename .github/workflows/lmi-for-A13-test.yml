@@ -93,7 +93,7 @@ jobs:
           fi
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ env.img_type }} ${{ env.Bottom_URL }} ${{ env.data_pass }} ${{ github.event.inputs.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.high_fps }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ env.Bottom_URL }} ${{ env.data_pass }} ${{ env.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.high_fps }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
