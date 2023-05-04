@@ -45,7 +45,7 @@ jobs:
         img_type:
           - ext
           - erofs
-        data_pass;
+        data_pass:
           - true
           - false
     steps:
