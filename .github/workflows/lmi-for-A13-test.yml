@@ -64,6 +64,8 @@ jobs:
           fi
           echo "device=lmi" >> $GITHUB_ENV
           echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip" >> $GITHUB_ENV
+          echo "$img_type"
+          echo "$data_pass"
           if [[ "$img_type" == "ext" ]]; then
             echo "img_type=ext" >> $GITHUB_ENV
           elif [[ "$img_type" == "erofs" ]]; then
