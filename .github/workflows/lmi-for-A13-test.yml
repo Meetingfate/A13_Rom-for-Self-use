@@ -48,11 +48,6 @@ jobs:
           - ext2
           - erofs2
     steps:
-      - name: 克隆
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PASSNAME }}
-          repository: Meetingfate/action_build_lmi_rom_A13
       - name: -准备环境
         run: |
           sudo timedatectl set-timezone Asia/Shanghai
@@ -96,6 +91,11 @@ jobs:
           sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
           sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
           sudo systemctl start alist
+      - name: 克隆
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PASSNAME }}
+          repository: Meetingfate/action_build_lmi_rom_A13
       - name: -发送开始构建通知
         run: |
           if [[ "${{ env.device }}" == "lmi" ]]; then
