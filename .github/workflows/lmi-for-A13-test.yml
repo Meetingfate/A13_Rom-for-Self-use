@@ -45,7 +45,7 @@ jobs:
         img_type:
           - ext
           - erofs
-        data_pass:
+        data_pass;
           - true
           - false
     steps:
@@ -64,18 +64,7 @@ jobs:
           fi
           echo "device=lmi" >> $GITHUB_ENV
           echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip" >> $GITHUB_ENV
-          echo "$img_type"
-          echo "$data_pass"
-          if [[ "$img_type" == "ext" ]]; then
-            echo "img_type=ext" >> $GITHUB_ENV
-          elif [[ "$img_type" == "erofs" ]]; then
-            echo "img_type=erofs" >> $GITHUB_ENV
-          fi
-          if [[ "$data_pass" == "true" ]]; then
-            echo "data_pass=true" >> $GITHUB_ENV
-          elif [[ "$data_pass" == "false" ]]; then
-            echo "data_pass=false" >> $GITHUB_ENV
-          fi
+          echo "img_type=$img_type" >> $GITHUB_ENV
           echo "data_pass=$data_pass" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
@@ -104,7 +93,7 @@ jobs:
           fi
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ env.Bottom_URL }} ${{ env.data_pass }} ${{ env.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.high_fps }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ env.img_type }} ${{ env.Bottom_URL }} ${{ env.data_pass }} ${{ github.event.inputs.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.high_fps }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
