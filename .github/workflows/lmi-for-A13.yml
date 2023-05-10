@@ -77,16 +77,6 @@ jobs:
           pip3 install requests
           pip3 install beautifulsoup4
           pip3 install --ignore-installed pyyaml
-          curl https://rclone.org/install.sh | sudo bash
-          mkdir -p ~/.config/rclone/
-          unzip -o -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
-          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
-          sudo systemctl stop alist
-          sudo mv -f /home/runner/.config/rclone/data.db-shm /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/data.db-wal /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
-          sudo systemctl start alist
       - name: -发送开始构建通知
         run: |
           if [[ "${{ env.device }}" == "lmi" ]]; then
@@ -118,6 +108,16 @@ jobs:
       - if: ${{ github.event.inputs.OneDrive == 'true' }}
         name: -上传到OneDrive
         run: |
+          curl https://rclone.org/install.sh | sudo bash
+          mkdir -p ~/.config/rclone/
+          unzip -o -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
+          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
+          sudo systemctl stop alist
+          sudo mv -f /home/runner/.config/rclone/data.db-shm /opt/alist/data
+          sudo mv -f /home/runner/.config/rclone/data.db-wal /opt/alist/data
+          sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
+          sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
+          sudo systemctl start alist
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
       - if: ${{ github.event.inputs.pan123 == 'true' }}
