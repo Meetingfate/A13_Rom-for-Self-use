@@ -40,14 +40,12 @@ on:
         default: 'true'
         required: true
         type: boolean
-      OneDrive:
-        description: 'OneDrive'
-        required: true
-        type: boolean
       GithubRelease:
         description: 'Github Release'
         required: true
         type: boolean
+      pass_123:
+        description: "自定义123云盘登陆，空格键分割"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -123,7 +121,11 @@ jobs:
       - if: ${{ github.event.inputs.pan123 == 'true' }}
         name: -上传到123盘
         run: |
-            sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ secrets.PASSPORT_123 }} ${{ secrets.PASSWORD_123 }}
+          if [ -n "${{ github.event.inputs.pass_123 }}" ]; then
+              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ github.event.inputs.pass_123 }}
+          else
+              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ secrets.PASSPORT_123 }} ${{ secrets.PASSWORD_123 }}
+          fi
       - name: -整合打包成功通知内容
         run: |
           if [[ "${{ env.device }}" == "lmi" ]]; then
