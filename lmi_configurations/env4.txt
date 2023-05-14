@@ -1,0 +1,2 @@
+img_type=ext
+data_pass=false

@@ -1,0 +1,2 @@
+img_type=erofs
+data_pass=true
