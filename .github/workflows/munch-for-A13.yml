@@ -30,6 +30,8 @@ on:
         description: 'Github Release'
         required: true
         type: boolean
+      pass_123:
+        description: "自定义123云盘登陆，空格键分割"
 jobs:
   build:
     runs-on: ubuntu-latest
