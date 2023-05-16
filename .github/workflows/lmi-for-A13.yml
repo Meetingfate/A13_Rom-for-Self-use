@@ -64,7 +64,7 @@ jobs:
               echo "date=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
           fi
           echo "device=lmi" >> $GITHUB_ENV
-          echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip" >> $GITHUB_ENV
+          echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.5.0.SJKCNXM/miui_LMI_V14.0.5.0.SJKCNXM_41456619f8_12.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
           sudo apt update --fix-missing
@@ -111,9 +111,6 @@ jobs:
           unzip -o -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
           curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
           sudo systemctl stop alist
-          sudo mv -f /home/runner/.config/rclone/data.db-shm /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/data.db-wal /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
           sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
           sudo systemctl start alist
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
