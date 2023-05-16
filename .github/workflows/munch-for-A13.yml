@@ -91,11 +91,8 @@ jobs:
         run: |
           curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone/
-          unzip -o -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
-          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
-          sudo systemctl stop alist
-          sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
-          sudo systemctl start alist
+          unzip -o -q -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
+          sudo chmod -R 777 "$GITHUB_WORKSPACE"/tools
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages/Kona_DEV
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages/Kona_DEV --buffer-size=1024M
       - if: ${{ github.event.inputs.pan123 == 'true' }}
