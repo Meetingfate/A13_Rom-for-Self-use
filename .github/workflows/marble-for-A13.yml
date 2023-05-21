@@ -1,4 +1,4 @@
-name: lmi-for-A13-test
+﻿name: munch-for-A13
 on:
   workflow_dispatch:
     inputs:
@@ -8,24 +8,18 @@ on:
       custom_version:
         description: "待打包的版本号"
       rom_type:
-        description: "ROM内容，可选pay、free"
+        description: "ROM类别，可选erofs、ext4"
         required: true
-        default: 'pay'
+        default: 'ext4'
         type: choice
         options:
-        - pay
-        - free
-      dolby:
-        description: '杜比音效'
+        - ext4
+        - erofs
+      Bottom_URL:
+        description: "底包下载地址"
         required: true
-        type: boolean
-      high_fps:
-        description: '高刷'
-        required: true
-        type: boolean
       pan123:
         description: '123盘'
-        default: 'true'
         required: true
         type: boolean
       OneDrive:
@@ -36,24 +30,17 @@ on:
         description: 'Github Release'
         required: true
         type: boolean
+      pass_123:
+        description: "自定义123云盘登陆，空格键分割"
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        img_type:
-          - ext
-          - erofs
-        data_pass:
-          - true
-          - false
     steps:
       - name: 克隆
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PASSNAME }}
-          repository: Meetingfate/action_build_lmi_rom_A13
+          repository: Meetingfate/action_build_marble_rom_A13
       - name: -准备环境
         run: |
           sudo timedatectl set-timezone Asia/Shanghai
@@ -62,18 +49,7 @@ jobs:
           else
               echo "date=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
           fi
-          echo "device=lmi" >> $GITHUB_ENV
-          echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.4.0.SJKCNXM/miui_LMI_V14.0.4.0.SJKCNXM_7af1b0266e_12.0.zip" >> $GITHUB_ENV
-          if [[ "$img_type" == "ext" ]]; then
-            echo "img_type=ext" >> $GITHUB_ENV
-          elif [[ "$img_type" == "erofs" ]]; then
-            echo "img_type=erofs" >> $GITHUB_ENV
-          fi
-          if [[ "$data_pass" == "true" ]]; then
-            echo "data_pass=true" >> $GITHUB_ENV
-          elif [[ "$data_pass" == "false" ]]; then
-            echo "data_pass=false" >> $GITHUB_ENV
-          fi
+          echo "device=marble" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
           sudo apt update --fix-missing
@@ -84,17 +60,12 @@ jobs:
           pip3 install requests
           pip3 install beautifulsoup4
           pip3 install --ignore-installed pyyaml
-        env:
-          img_type: ${{ matrix.img_type }}
-          data_pass: ${{ matrix.data_pass }}
       - name: -发送开始构建通知
         run: |
-          if [[ "${{ env.device }}" == "lmi" ]]; then
-              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K30Pro ${{ env.date }}开始构建","content":" **红米K30Pro ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
-          fi
+          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K40S ${{ env.date }}开始构建","content":" **红米K40S ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
       - name: -制作rom‌‌
         run: |
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ env.Bottom_URL }} ${{ env.data_pass }} ${{ env.img_type }} ${{ github.event.inputs.dolby }} ${{ github.event.inputs.high_fps }}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.rom_type }} ${{ github.event.inputs.Bottom_URL }}
       - if: ${{ github.event.inputs.GithubRelease == 'true' }}
         name: -处理包
         run: |
@@ -120,33 +91,28 @@ jobs:
         run: |
           curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone/
-          unzip -o -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
-          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
-          sudo systemctl stop alist
-          sudo mv -f /home/runner/.config/rclone/data.db-shm /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/data.db-wal /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/data.db /opt/alist/data
-          sudo mv -f /home/runner/.config/rclone/config.json /opt/alist/data
-          sudo systemctl start alist
-          rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages
-          rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages --buffer-size=1024M
+          unzip -o -q -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
+          sudo chmod -R 777 "$GITHUB_WORKSPACE"/tools
+          rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages/Kona_DEV
+          rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages/Kona_DEV --buffer-size=1024M
       - if: ${{ github.event.inputs.pan123 == 'true' }}
         name: -上传到123盘
         run: |
-            sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ secrets.PASSPORT_123 }} ${{ secrets.PASSWORD_123 }}
+          if [ -n "${{ github.event.inputs.pass_123 }}" ]; then
+              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ github.event.inputs.pass_123 }}
+          else
+              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ secrets.PASSPORT_123 }} ${{ secrets.PASSWORD_123 }}
+          fi
       - name: -整合打包成功通知内容
         run: |
-          if [[ "${{ env.device }}" == "lmi" ]]; then
-              Mpush=" **红米K30Pro ${{ env.date }}已构建完成** \n \n"
-              if [[ "${{ env.popup }}" == "true" ]]; then
-                  Mpush+=" **升降未修复，当前为测试包** \n \n"
-              fi
+          if [[ "${{ env.device }}" == "munch" ]]; then
+              Mpush=" **红米note 12 Turbe ${{ env.date }}已构建完成** \n \n"
               Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
               if [[ ${{ github.event.inputs.GithubRelease }} == 'true' ]]; then
                  Mpush+=" **已上传至GithubRelease，请前往Github自行下载** \n \n"
               fi
               if [[ ${{ github.event.inputs.OneDrive }} == 'true' ]]; then
-                 Mpush+=" **已上传至OneDrive，下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }})** \n \n"
+                 Mpush+=" **已上传至OneDrive，下载地址为：[https://onedrive.zjw.js.cn/RubbishBin/DevPackages/Kona_DEV/${{ env.NEW_PACKAGE_NAME }}](https://onedrive.zjw.js.cn/RubbishBin/DevPackages/Kona_DEV/${{ env.NEW_PACKAGE_NAME }})** \n \n"
               fi
               if [[ ${{ github.event.inputs.pan123 }} == 'true' ]]; then
                  Mpush+=" **已上传至123云盘，请登录123云盘自行下载** \n \n"
@@ -159,8 +125,8 @@ jobs:
           echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
-          if [[ "${{ env.device }}" == "lmi" ]]; then
-              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+          if [[ "${{ env.device }}" == "marble" ]]; then
+              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米note 12 Turbe ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
       - name: -删除工作流运行
