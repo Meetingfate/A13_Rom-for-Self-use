@@ -11,7 +11,7 @@ jobs:
          sudo apt-get update
          sudo apt-get install android-sdk
          #sudo apt-get install android-sdk-ndk || true
-         which sdkmanager
+         sudo apt-get install sdkmanager
       - name: -删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
