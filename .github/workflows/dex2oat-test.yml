@@ -9,8 +9,10 @@ jobs:
       - name: -准备环境
         run: |
          sudo apt-get update
-         sudo apt-get install android-sdk
-         sdkmanager --install build-tools;29.0.2
+         aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+         mkdir -p "$GITHUB_WORKSPACE"/sdk
+         sudo unzip -o "$GITHUB_WORKSPACE"/commandlinetools-linux-9477386_latest.zip -d "$GITHUB_WORKSPACE"/sdk
+         "$GITHUB_WORKSPACE"/sdk/cmdline-tools/bin/sdkmanager --install build-tools;29.0.2
          /path/to/android-sdk/build-tools/29.0.2/dex2oat --hlep
       - name: -删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
