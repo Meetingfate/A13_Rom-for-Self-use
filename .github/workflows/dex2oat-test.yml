@@ -12,7 +12,7 @@ jobs:
          sudo apt-get install android-sdk
          #sudo apt-get install android-sdk-ndk || true
          sudo apt-get install sdkmanager
-         sudo sdkmanager \"platforms;android-33\" \"build-tools;29.0.2\"
+         sudo sdkmanager --hlep
       - name: -删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
