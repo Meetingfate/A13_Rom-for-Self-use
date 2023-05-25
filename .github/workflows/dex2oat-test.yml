@@ -1,0 +1,21 @@
+name: dex2oat-test
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: -准备环境
+        run: |
+         sudo apt-get update
+         sudo apt-get install android-sdk android-sdk-ndk
+         sdkmanager --install build-tools;29.0.2
+         /path/to/android-sdk/build-tools/29.0.2/dex2oat --hlep
+      - name: -删除工作流运行
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          retain_days: 0
+          keep_minimum_runs: 0
