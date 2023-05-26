@@ -55,7 +55,7 @@ jobs:
           pip3 install --ignore-installed pyyaml
       - name: -发送开始构建通知
         run: |
-          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米note 12 Turbe ${{ env.date }}开始构建","content":" **红米note 12 Turbe ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米note 12 Turbo ${{ env.date }}开始构建","content":" **红米note 12 Turbo ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
       - name: -制作rom‌‌
         run: |
           sudo bash "$GITHUB_WORKSPACE"/make.sh ${{ github.event.inputs.URL }} ${{ env.date }} $GITHUB_ENV $GITHUB_WORKSPACE ${{ github.event.inputs.Bottom_URL }}
@@ -119,7 +119,7 @@ jobs:
           echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           if [[ "${{ env.device }}" == "marble" ]]; then
-              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米note 12 Turbe ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+              curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米note 12 Turbo ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
               echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
           fi
       - name: -删除工作流运行
