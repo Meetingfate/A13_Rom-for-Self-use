@@ -98,7 +98,7 @@ jobs:
           fi
       - name: -整合打包成功通知内容
         run: |
-          if [[ "${{ env.device }}" == "munch" ]]; then
+          if [[ "${{ env.device }}" == "marble" ]]; then
               Mpush=" **红米note 12 Turbe ${{ env.date }}已构建完成** \n \n"
               Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
               if [[ ${{ github.event.inputs.GithubRelease }} == 'true' ]]; then
