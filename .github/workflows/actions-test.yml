@@ -1,4 +1,4 @@
-name: dex2oat-test
+﻿name: actions-test
 on:
   workflow_dispatch:
 
@@ -6,13 +6,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: -准备环境
-        run: |
-         sudo apt-get update
-         sudo apt-get install android-sdk
-         #sudo apt-get install android-sdk-ndk || true
-         sudo apt-get install sdkmanager
-         sudo sdkmanager --hlep
       - name: -删除工作流运行
         uses: Mattraks/delete-workflow-runs@v2
         with:
