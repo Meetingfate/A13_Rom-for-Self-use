@@ -36,7 +36,7 @@ on:
         required: true
         type: boolean
       pan123:
-        description: '123盘'
+        description: '123盘（维护中，无法使用）'
         default: 'true'
         required: true
         type: boolean
