@@ -27,17 +27,12 @@ on:
         description: 'data加密'
         required: true
         type: boolean
-      dolby:
-        description: '杜比音效'
-        required: true
-        type: boolean
-      high_fps:
-        description: '高刷'
-        required: true
-        type: boolean
       pan123:
         description: '123盘（维护中，无法使用）'
-        default: 'true'
+        required: true
+        type: boolean
+      OneDrive:
+        description: 'OneDrive'
         required: true
         type: boolean
       GithubRelease:
