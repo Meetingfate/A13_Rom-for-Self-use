@@ -91,11 +91,11 @@ jobs:
       - if: ${{ github.event.inputs.pan123 == 'true' }}
         name: -上传到123盘
         run: |
-          if [ -n "${{ github.event.inputs.pass_123 }}" ]; then
-              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ github.event.inputs.pass_123 }}
-          else
-              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ secrets.PASSPORT_123 }} ${{ secrets.PASSWORD_123 }}
-          fi
+          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
+          sudo systemctl stop alist
+          unzip -o -q ~/.config/rclone/alist.zip -d /opt/alist/data
+          sudo systemctl start alist
+          rclone copy -P ./zip/* 123pan:/123pan_yzdhz --buffer-size=1024M
       - name: -整合打包成功通知内容
         run: |
           if [[ "${{ env.device }}" == "marble" ]]; then
