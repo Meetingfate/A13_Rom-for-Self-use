@@ -30,8 +30,6 @@ on:
         description: 'Github Release'
         required: true
         type: boolean
-      pass_123:
-        description: "自定义123云盘登陆，空格键分割"
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -60,6 +58,13 @@ jobs:
           pip3 install requests
           pip3 install beautifulsoup4
           pip3 install --ignore-installed pyyaml
+          curl https://rclone.org/install.sh | sudo bash
+          mkdir -p ~/.config/rclone/
+          unzip -o -q -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
+          curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
+          sudo systemctl stop alist
+          sudo unzip -o -q ~/.config/rclone/alist.zip -d /opt/alist/data
+          sudo systemctl start alist
       - name: -发送开始构建通知
         run: |
           curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K40S ${{ env.date }}开始构建","content":" **红米K40S ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
@@ -89,20 +94,12 @@ jobs:
       - if: ${{ github.event.inputs.OneDrive == 'true' }}
         name: -上传到OneDrive
         run: |
-          curl https://rclone.org/install.sh | sudo bash
-          mkdir -p ~/.config/rclone/
-          unzip -o -q -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
-          sudo chmod -R 777 "$GITHUB_WORKSPACE"/tools
           rclone mkdir OneDrive:/MI_Packages/RubbishBin/DevPackages/Kona_DEV
           rclone sync -P ./zip/* OneDrive:/MI_Packages/RubbishBin/DevPackages/Kona_DEV --buffer-size=1024M
       - if: ${{ github.event.inputs.pan123 == 'true' }}
         name: -上传到123盘
         run: |
-          if [ -n "${{ github.event.inputs.pass_123 }}" ]; then
-              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ github.event.inputs.pass_123 }}
-          else
-              sudo python3 "$GITHUB_WORKSPACE"/tools/123pan_push.py  "$GITHUB_WORKSPACE"/zip/${{ env.NEW_PACKAGE_NAME }} 0 ${{ secrets.PASSPORT_123 }} ${{ secrets.PASSWORD_123 }}
-          fi
+          rclone copy -P ./zip/* 123pan:/123pan_xsj --buffer-size=1024M
       - name: -整合打包成功通知内容
         run: |
           if [[ "${{ env.device }}" == "munch" ]]; then
