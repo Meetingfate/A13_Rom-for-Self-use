@@ -53,7 +53,7 @@ jobs:
           pip3 install --ignore-installed pyyaml
           curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone/
-          unzip -o -q -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclon
+          sudo unzip -o -q -P ${{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclon
           curl -fsSL "https://alist.nn.ci/v3.sh" | sudo bash -s install
           sudo systemctl stop alist
           sudo unzip -o -q ~/.config/rclone/alist.zip -d /opt/alist/data
