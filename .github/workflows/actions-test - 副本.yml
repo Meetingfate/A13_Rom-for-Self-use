@@ -1,4 +1,4 @@
-﻿name: actions-t
+name: actions-t
 on:
   workflow_dispatch:
 
@@ -8,5 +8,5 @@ jobs:
     steps:
       - name: -查看
         run:
-            free -h
-            df -h
+          free -h
+          df -h
