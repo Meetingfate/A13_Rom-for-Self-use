@@ -1,0 +1,12 @@
+﻿name: actions-t
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: -查看
+        run:
+            free -h
+            df -h
