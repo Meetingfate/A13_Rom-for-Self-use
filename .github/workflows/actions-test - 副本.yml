@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: -查看
-        run:
+        run: |
           free -h
           df -h
