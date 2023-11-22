@@ -58,6 +58,7 @@ jobs:
           echo "EXT4_RW=${{ github.event.inputs.EXT4_RW }}" >> $GITHUB_ENV
           echo "IMAGE_TYPE=${{ github.event.inputs.IMAGE_TYPE }}" >> $GITHUB_ENV
           echo "device=lmi" >> $GITHUB_ENV
+          echo "URL=${{ github.event.inputs.URL }}" >> $GITHUB_ENV
           echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.5.0.SJKCNXM/miui_LMI_V14.0.5.0.SJKCNXM_41456619f8_12.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
@@ -74,6 +75,9 @@ jobs:
           curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K30Pro ${{ env.date }}开始构建","content":" **红米K30Pro ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
       - name: -制作rom‌‌
         run: |
+          echo "下载系统包"
+          aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${URL}
+          aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${Bottom_URL}
           high_fps=false
           sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_UR} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version}
       - name: -处理包
