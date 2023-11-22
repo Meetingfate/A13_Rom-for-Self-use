@@ -29,10 +29,6 @@ on:
         description: '读写'
         required: true
         type: boolean
-      GithubRelease:
-        description: 'Github Release'
-        required: true
-        type: boolean
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -102,7 +98,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: -整合打包成功通知内容
         run: |
-          Mpush=" **红米K30Pro ${{ env.datkk }}已构建完成** \n \n"
+          Mpush=" **红米K30Pro ${{ env.OS_version }}已构建完成** \n \n"
           Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
           Mpush+=" **已上传至GithubRelease，请前往Github自行下载** \n \n"
           echo "Mpush=$(echo $Mpush)" >> $GITHUB_ENV
