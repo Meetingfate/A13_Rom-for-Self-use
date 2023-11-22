@@ -94,8 +94,8 @@ jobs:
         uses: ncipollo/release-action@main
         with:
           artifacts: ${{ github.workspace }}/GithubRelease/*
-          name: "$datkk"
-          tag: "$datkk"
+          name: "${{ env.OS_version }}"
+          tag: "${{ env.OS_version }}"
           bodyFile: "${{ github.workspace }}/file.log"
           allowUpdates: true
           artifactErrorsFailBuild: true
