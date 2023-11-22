@@ -80,7 +80,7 @@ jobs:
           aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${URL}
           aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${Bottom_URL}
           high_fps=false
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_UR} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_URL} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version}
       - name: -处理包
         run: |
           mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
