@@ -85,10 +85,14 @@ jobs:
         run: |
           mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
           cd "$GITHUB_WORKSPACE"/GithubRelease
-          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/"${{ env.NEW_PACKAGE_NAME }}" "${{ env.NEW_PACKAGE_NAME }}"
-          cd "$GITHUB_WORKSPACE"
-          touch file.log
-          echo "${{ env.NEW_PACKAGE_NAME }}" > file.log
+          for i in $(ls "$GITHUB_WORKSPACE"/zip/ | grep -v "/$" | grep \."zip"$)
+          do
+            echo "$i"
+            sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/"$i" "$i"
+            cd "$GITHUB_WORKSPACE"
+            touch file.log
+            echo "$i" > file.log
+          done
       - name: -上传到Github Release
         uses: ncipollo/release-action@main
         with:
