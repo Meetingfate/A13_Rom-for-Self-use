@@ -53,7 +53,7 @@ jobs:
           if [ -n "${{ github.event.inputs.OS }}" ]; then
               echo "OS_version=${{ github.event.inputs.OS }}" >> $GITHUB_ENV
           else
-              echo "OS_version=$(echo ${{ github.event.inputs.URL }} | cut -d"_" -f4)" >> $GITHUB_ENV
+              echo "OS_version=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
           fi
           echo "EXT4_RW=${{ github.event.inputs.EXT4_RW }}" >> $GITHUB_ENV
           echo "IMAGE_TYPE=${{ github.event.inputs.IMAGE_TYPE }}" >> $GITHUB_ENV
@@ -80,19 +80,16 @@ jobs:
           aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${URL}
           aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${Bottom_URL}
           high_fps=false
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_URL} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version}
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_URL} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version} $GITHUB_ENV
       - name: -处理包
         run: |
           mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
           cd "$GITHUB_WORKSPACE"/GithubRelease
-          for i in $(ls "$GITHUB_WORKSPACE"/zip/ | grep -v "/$" | grep \."zip"$)
-          do
-            echo "$i"
-            sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/"$i" "$i"
-            cd "$GITHUB_WORKSPACE"
-            touch file.log
-            echo "$i" > file.log
-          done
+          echo "${{ env.NEW_PACKAGE_NAME }}"
+          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/"${{ env.NEW_PACKAGE_NAME }}" "${{ env.NEW_PACKAGE_NAME }}"
+          cd "$GITHUB_WORKSPACE"
+          touch file.log
+          echo "${{ env.NEW_PACKAGE_NAME }}" > file.log
       - name: -上传到Github Release
         uses: ncipollo/release-action@main
         with:
@@ -105,15 +102,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: -整合打包成功通知内容
         run: |
-          if [[ "${{ env.device }}" == "lmi" ]]; then
-              Mpush=" **红米K30Pro ${{ env.date }}已构建完成** \n \n"
-              if [[ "${{ env.popup }}" == "true" ]]; then
-                  Mpush+=" **升降未修复，当前为测试包** \n \n"
-              fi
-              Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
-              Mpush+=" **已上传至GithubRelease，请前往Github自行下载** \n \n"
-              echo "Mpush=$(echo $Mpush)" >> $GITHUB_ENV
-          fi
+          Mpush=" **红米K30Pro ${{ env.datkk }}已构建完成** \n \n"
+          Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
+          Mpush+=" **已上传至GithubRelease，请前往Github自行下载** \n \n"
+          echo "Mpush=$(echo $Mpush)" >> $GITHUB_ENV
       - name: -发送构建完成通知
         run: |
           mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
