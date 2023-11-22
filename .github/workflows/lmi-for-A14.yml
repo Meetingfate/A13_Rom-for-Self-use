@@ -55,8 +55,8 @@ jobs:
           else
               echo "OS_version=$(echo ${URL} | cut -d"_" -f3)" >> $GITHUB_ENV
           fi
-          echo "${{ github.event.inputs.EXT4_RW }}" >> $GITHUB_ENV
-          echo "${{ github.event.inputs.IMAGE_TYPE }}" >> $GITHUB_ENV
+          echo "EXT4_RW=${{ github.event.inputs.EXT4_RW }}" >> $GITHUB_ENV
+          echo "IMAGE_TYPE=${{ github.event.inputs.IMAGE_TYPE }}" >> $GITHUB_ENV
           echo "device=lmi" >> $GITHUB_ENV
           echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.5.0.SJKCNXM/miui_LMI_V14.0.5.0.SJKCNXM_41456619f8_12.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
