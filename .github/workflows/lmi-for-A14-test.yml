@@ -93,8 +93,8 @@ jobs:
           title: "${{ env.OS_version }}"
           note: "${{ env.OS_version }}"
           token: ${{ secrets.PASSNAME }}
-          owner: lmi_rom_A14
-          repo: lmi_rom_A14
+          owner: Meetingfate/lmi_rom_A14
+          repo: Meetingfate/lmi_rom_A14
       - name: -整合打包成功通知内容
         run: |
           Mpush=" **红米K30Pro ${{ env.OS_version }}已构建完成** \n \n"
