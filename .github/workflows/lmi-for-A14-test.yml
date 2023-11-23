@@ -87,11 +87,14 @@ jobs:
           touch file.log
           echo "${{ env.NEW_PACKAGE_NAME }}" > file.log
       - name: -上传到Github Release
-        uses: stefanzweifel/gh-release@v1
+        uses: ncipollo/release-action@main
         with:
-          file: ${{ github.workspace }}/GithubRelease/*
-          title: "${{ env.OS_version }}"
-          note: "${{ env.OS_version }}"
+          artifacts: ${{ github.workspace }}/GithubRelease/*
+          name: "${{ env.OS_version }}"
+          tag: "${{ env.OS_version }}"
+          bodyFile: "${{ github.workspace }}/file.log"
+          allowUpdates: true
+          artifactErrorsFailBuild: true
           token: ${{ secrets.PASSNAME }}
           owner: Meetingfate/lmi_rom_A14
           repo: Meetingfate/lmi_rom_A14
