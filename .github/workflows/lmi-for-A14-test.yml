@@ -1,0 +1,112 @@
+name: lmi-for-A14
+on:
+  workflow_dispatch:
+    inputs:
+      URL:
+        description: "待操作的系统包下载地址"
+        required: true
+      custom_version:
+        description: "待打包的版本号(可为空)"
+      OS:
+        description: "待打包的OS版本号(可为空)"
+      rom_type:
+        description: "ROM内容，可选pay、free"
+        required: true
+        default: 'pay'
+        type: choice
+        options:
+        - pay
+        - free
+      IMAGE_TYPE:
+        description: "IMG格式，可选erofs、ext"
+        required: true
+        default: 'erofs'
+        type: choice
+        options:
+        - erofs
+        - ext
+      EXT4_RW:
+        description: '读写'
+        required: true
+        type: boolean
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 克隆
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PASSNAME }}
+          repository: Meetingfate/lmi_rom_A14
+      - name: -准备环境
+        run: |
+          sudo timedatectl set-timezone Asia/Shanghai
+          if [ -n "${{ github.event.inputs.custom_version }}" ]; then
+              echo "datkk=${{ github.event.inputs.custom_version }}" >> $GITHUB_ENV
+          else
+              echo "datkk=true" >> $GITHUB_ENV
+          fi
+          if [ -n "${{ github.event.inputs.OS }}" ]; then
+              echo "OS_version=${{ github.event.inputs.OS }}" >> $GITHUB_ENV
+          else
+              echo "OS_version=$(echo ${{ github.event.inputs.URL }} | cut -d"/" -f4)" >> $GITHUB_ENV
+          fi
+          echo "EXT4_RW=${{ github.event.inputs.EXT4_RW }}" >> $GITHUB_ENV
+          echo "IMAGE_TYPE=${{ github.event.inputs.IMAGE_TYPE }}" >> $GITHUB_ENV
+          echo "rom_type=${{ github.event.inputs.rom_type }}" >> $GITHUB_ENV
+          echo "device=lmi" >> $GITHUB_ENV
+          echo "URL=${{ github.event.inputs.URL }}" >> $GITHUB_ENV
+          echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.5.0.SJKCNXM/miui_LMI_V14.0.5.0.SJKCNXM_41456619f8_12.0.zip" >> $GITHUB_ENV
+          sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
+          sudo apt --fix-broken install
+          sudo apt update --fix-missing
+          pip3 install --upgrade pip
+          pip3 install pycryptodome
+          pip3 install setuptools
+          pip3 install docopt
+          pip3 install requests
+          pip3 install beautifulsoup4
+          pip3 install --ignore-installed pyyaml
+      - name: -发送开始构建通知
+        run: |
+          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K30Pro ${{ env.date }}开始构建","content":" **红米K30Pro ${{ env.date }}开始构建** ","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+      - name: -制作rom‌‌
+        run: |
+          echo "下载系统包"
+          aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${URL}
+          aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${Bottom_URL}
+          high_fps=false
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_URL} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version} $GITHUB_ENV
+      - name: -处理包
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
+          cd "$GITHUB_WORKSPACE"/GithubRelease
+          echo "${{ env.NEW_PACKAGE_NAME }}"
+          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/"${{ env.NEW_PACKAGE_NAME }}" "${{ env.NEW_PACKAGE_NAME }}"
+          cd "$GITHUB_WORKSPACE"
+          touch file.log
+          echo "${{ env.NEW_PACKAGE_NAME }}" > file.log
+      - name: -上传到Github Release
+        uses: stefanzweifel/gh-release@v1
+        with:
+          artifacts: ${{ github.workspace }}/GithubRelease/*
+          name: "${{ env.OS_version }}"
+          tag: "${{ env.OS_version }}"
+          bodyFile: "${{ github.workspace }}/file.log"
+          token: ${{ secrets.PASSNAME }}
+          owner: lmi_for_A14
+          repo: lmi_for_A14
+      - name: -整合打包成功通知内容
+        run: |
+          Mpush=" **红米K30Pro ${{ env.OS_version }}已构建完成** \n \n"
+          Mpush+=" **包名：${{ env.NEW_PACKAGE_NAME }}** \n \n **MD5：${{ env.MD5 }}** \n \n"
+          Mpush+=" **已上传至GithubRelease，请前往Github自行下载** \n \n"
+          echo "Mpush=$(echo $Mpush)" >> $GITHUB_ENV
+      - name: -发送构建完成通知
+        run: |
+          mkdir "$GITHUB_WORKSPACE"/romdata && touch "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          echo ${{ env.device }}PKG=${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          echo ${{ env.device }}MD5=${{ env.MD5 }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          echo ${{ env.device }}TIME=\"$(TZ=':Asia/Shanghai' date '+%Y.%m.%d %H:%M')\" >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
+          curl -i -X POST -H 'Content-type':'application/json' -d '{"token":"${{ secrets.pushToken2 }}","title":"红米K30Pro ${{ env.date }}已构建完成","content":"${{ env.Mpush }}","topic":"lmi","template":"markdown"}' http://www.pushplus.plus/send || true
+          echo ${{ env.device }}URL=https://onedrive.zjw.js.cn/RubbishBin/DevPackages/${{ env.NEW_PACKAGE_NAME }} >> "$GITHUB_WORKSPACE"/romdata/${{ env.device }}.ini
