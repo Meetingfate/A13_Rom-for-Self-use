@@ -34,10 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 克隆
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PASSNAME }}
-          repository: Meetingfate/lmi_rom_A14
+        uses: actions/checkout
       - name: -准备环境
         run: |
           sudo timedatectl set-timezone Asia/Shanghai
