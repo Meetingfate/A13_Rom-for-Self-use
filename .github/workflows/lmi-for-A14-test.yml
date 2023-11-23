@@ -89,10 +89,9 @@ jobs:
       - name: -上传到Github Release
         uses: stefanzweifel/gh-release@v1
         with:
-          artifacts: ${{ github.workspace }}/GithubRelease/*
-          name: "${{ env.OS_version }}"
-          tag: "${{ env.OS_version }}"
-          bodyFile: "${{ github.workspace }}/file.log"
+          file: ${{ github.workspace }}/GithubRelease/*
+          title: "${{ env.OS_version }}"
+          note: "${{ env.OS_version }}"
           token: ${{ secrets.PASSNAME }}
           owner: lmi_for_A14
           repo: lmi_for_A14
