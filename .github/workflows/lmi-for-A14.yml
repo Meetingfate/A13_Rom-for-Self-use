@@ -1,4 +1,4 @@
-﻿name: lmi-for-A14
+name: lmi-for-A14
 on:
   workflow_dispatch:
     inputs:
@@ -29,6 +29,10 @@ on:
         description: '读写'
         required: true
         type: boolean
+      data_pass:
+        description: 'data去除强制加密'
+        required: true
+        type: boolean
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -56,6 +60,7 @@ jobs:
           echo "rom_type=${{ github.event.inputs.rom_type }}" >> $GITHUB_ENV
           echo "device=lmi" >> $GITHUB_ENV
           echo "URL=${{ github.event.inputs.URL }}" >> $GITHUB_ENV
+          echo "data_pass=${{ github.event.inputs.data_pass }}" >> $GITHUB_ENV
           echo "Bottom_URL=https://hugeota.d.miui.com/V14.0.5.0.SJKCNXM/miui_LMI_V14.0.5.0.SJKCNXM_41456619f8_12.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd dos2unix
           sudo apt --fix-broken install
@@ -76,7 +81,7 @@ jobs:
           aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${URL}
           aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE" ${Bottom_URL}
           high_fps=false
-          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_URL} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version} $GITHUB_ENV
+          sudo bash "$GITHUB_WORKSPACE"/make.sh lmi ${URL} ${datkk} ${GITHUB_WORKSPACE} ${rom_type} ${Bottom_URL} ${IMAGE_TYPE} ${EXT4_RW} ${high_fps} ${OS_version} ${data_pass} $GITHUB_ENV
       - name: -处理包
         run: |
           mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
@@ -89,13 +94,15 @@ jobs:
       - name: -上传到Github Release
         uses: ncipollo/release-action@main
         with:
-          artifacts: ${{ github.workspace }}/GithubRelease/*
+          owner: Meetingfate
+          repo: lmi_rom_A14
+          artifacts: "${{ github.workspace }}/GithubRelease/*"
           name: "${{ env.OS_version }}"
           tag: "${{ env.OS_version }}"
           bodyFile: "${{ github.workspace }}/file.log"
           allowUpdates: true
           artifactErrorsFailBuild: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PASSNAME }}
       - name: -整合打包成功通知内容
         run: |
           Mpush=" **红米K30Pro ${{ env.OS_version }}已构建完成** \n \n"
