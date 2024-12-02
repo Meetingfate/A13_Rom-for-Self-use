@@ -13,12 +13,12 @@ jobs:
         uses: actions/checkout@main
       - name: -准备环境
         run: |
-          sudo apt install aria2
+          sudo apt install aria2 curl
           sudo apt --fix-broken install
           sudo apt update --fix-missing
       - name: -处理包
         run: |
-          aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE"/eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip ""${URL}""
+          curl -O -# ""${URL}"" -o "$GITHUB_WORKSPACE"/eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip
           mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
           cd "$GITHUB_WORKSPACE"/GithubRelease
           sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip
