@@ -1,12 +1,37 @@
-name: actions-t
+name: vermeer
 on:
   workflow_dispatch:
-
+    inputs:
+      URL:
+        description: "待操作的系统包下载地址"
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: -查看
+      - name: 克隆
+        uses: actions/checkout@main
+      - name: -准备环境
         run: |
-          free -h
-          df -h
+          sudo apt install aria2
+          sudo apt --fix-broken install
+          sudo apt update --fix-missing
+      - name: -处理包
+        run: |
+          aria2c -x16 -j$(nproc) -U "Mozilla/5.0" -d "$GITHUB_WORKSPACE"/eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip ""${URL}""
+          mkdir -p "$GITHUB_WORKSPACE"/GithubRelease
+          cd "$GITHUB_WORKSPACE"/GithubRelease
+          sudo split -b 1536M -d "$GITHUB_WORKSPACE"/zip/eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip eu_k70-OS2.0.5.0.VNKCNXM-15.0.zip
+          cd "$GITHUB_WORKSPACE"
+          touch file.log
+          echo "eu.k70" > file.log
+      - name: -上传到Github Release
+        uses: ncipollo/release-action@main
+        with:
+          artifacts: ${{ github.workspace }}/GithubRelease/*
+          name: "k70"
+          tag: "k70"
+          bodyFile: "${{ github.workspace }}/file.log"
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          token: ${{ secrets.GITHUB_TOKEN }}
